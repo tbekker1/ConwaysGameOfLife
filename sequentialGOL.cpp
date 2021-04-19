@@ -11,6 +11,9 @@
 #include <string>
 #include <cstddef>
 
+#include "Board.h"
+#include "Cell.h"
+
 using namespace std;
 
 
@@ -39,7 +42,37 @@ int main(int argc, char * argv[]){
 	}
 
 	Board board(dimension);
+	board.init(density);
 
+	board.display();
+
+	for (int i = 0; i < numIterations; i++){
+
+		for (int j = 0; j < board.getSize(); j++){
+			Cell* currCell = board.getElementAtIndex(j);
+
+			int neighborCount = board.getAliveNeighborCount(currCell);
+
+			switch(neighborCount){
+			case 2:
+				currCell->setaliveNextCycle(currCell->getaliveNow());
+				break;
+
+			case 3:
+				currCell->setaliveNextCycle(true);
+				break;
+
+			default:
+				currCell->setaliveNextCycle(false);
+				break;
+
+			}
+		}
+
+		board.updateBoard();
+
+		board.display();
+	}
 
 }
 

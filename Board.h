@@ -16,7 +16,9 @@ public:
 	void init(int density);
 	void updateBoard();
 	int getAliveNeighborCount(Cell* cell);
-
+	int getSize();
+	Cell* getElementAtIndex(int index);
+	void display();
 private:
 	int getIndex(int x, int y);
 	int aliveOrNot(int x, int y);

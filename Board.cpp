@@ -6,9 +6,12 @@
  */
 
 #include "Board.h"
+#include <iostream>
 #include <cstddef>
 #include <cstdlib>
 #include <time.h>
+
+using namespace std;
 
 Board::Board(int dimension) {
 	m_dimension = dimension;
@@ -111,8 +114,41 @@ int Board::aliveOrNot(int x, int y){
 	}
 }
 
+int Board::getSize(){
+	return m_size;
+}
+
+Cell* Board::getElementAtIndex(int index){
+
+	if (index < 0 || index >= m_size){
+		return NULL;
+	}
+
+	return &m_board[index];
+}
 
 
+void Board::display(){
 
+	for (int i = 0; i < m_size; i++){
+
+		Cell* currCell = getElementAtIndex(i);
+
+		if (currCell->getaliveNow() == true){
+			cout << '*';
+		}
+
+		else{
+			cout << '-';
+		}
+
+		if ((i + 1) % m_dimension == 0){
+			cout << endl;
+		}
+
+	}
+
+	cout << endl;
+}
 
 
