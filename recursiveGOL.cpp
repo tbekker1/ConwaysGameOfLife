@@ -8,6 +8,8 @@
  *
  * Compile as: g++ -fopenmp recursiveGOL.cpp Board.cpp Cell.cpp -o rGOL
  */
+
+
 #include <iostream>
 #include <omp.h>
 #include <time.h>
@@ -31,6 +33,8 @@ void divideBoard(Board &, int, int, int);
  * [optional] number of partitions made per recursive step
  * 
  */
+
+
 int main(int argc, char * argv[]){
 
 	if (argc < 4 || argc > 5){
@@ -110,3 +114,4 @@ void divideBoard(Board &board, int start, int end, int partitions) {
         } while(!done);
     }
 }
+

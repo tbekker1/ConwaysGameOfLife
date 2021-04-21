@@ -31,7 +31,6 @@ Cell* Board::next(Cell* cell){
 	if (cell == NULL){
 		return &m_board[0];
 	}
-
 	int cellIndex = getIndex(cell->getxCoord(), cell->getyCoord());
 
 	if (cellIndex == -1 || cellIndex == m_size - 1){

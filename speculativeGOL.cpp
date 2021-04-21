@@ -1,10 +1,10 @@
 /*
- * sequentialGOL.cpp
+ * speculativeGOL.cpp
  *
- *  Created on: Apr 17, 2021
+ *  Created on: Apr 21, 2021
  *      Author: thomas
  *
- *  Compile as: g++ -fopenmp sequentialGOL.cpp Board.cpp Cell.cpp -o seqGOL
+ * Compile as: g++ -fopenmp speculativeGOL.cpp Board.cpp Cell.cpp -o specGOL
  */
 
 #include <iostream>
@@ -25,7 +25,6 @@ using namespace std;
  * dimension of array (if dimension = 8, size = 64)
  * number of iterations
  * initial density of live cells (a percentage from 1 to 100)
- *
  */
 
 
@@ -52,6 +51,7 @@ int main(int argc, char * argv[]){
 
 	for (int i = 0; i < numIterations; i++){
 
+#pragma omp parallel for schedule(static)
 		for (int j = 0; j < board.getSize(); j++){
 			Cell* currCell = board.getElementAtIndex(j);
 
@@ -79,5 +79,7 @@ int main(int argc, char * argv[]){
 	}
 
 }
+
+
 
 

@@ -1,11 +1,13 @@
 /*
- * sequentialGOL.cpp
+ * dataGOL.cpp
  *
- *  Created on: Apr 17, 2021
+ *  Created on: Apr 21, 2021
  *      Author: thomas
  *
- *  Compile as: g++ -fopenmp sequentialGOL.cpp Board.cpp Cell.cpp -o seqGOL
+ *
+ * Compile as: g++ -fopenmp dataGOL.cpp Board.cpp Cell.cpp -o dGOL
  */
+
 
 #include <iostream>
 #include <omp.h>
@@ -25,7 +27,6 @@ using namespace std;
  * dimension of array (if dimension = 8, size = 64)
  * number of iterations
  * initial density of live cells (a percentage from 1 to 100)
- *
  */
 
 
@@ -50,18 +51,35 @@ int main(int argc, char * argv[]){
 
 	board.display();
 
+	Cell* aliveCells[board.getSize()];
+	Cell* deadCells[board.getSize()];
+	int aliveNumber = 0;
+	int deadNumber = 0;
+
+	for (int i = 0; i < board.getSize(); i++){
+		Cell* currCell = board.getElementAtIndex(i);
+
+		if (currCell->getaliveNow() == true){
+			aliveCells[aliveNumber] = currCell;
+			aliveNumber++;
+		}
+		else{
+			deadCells[deadNumber] = currCell;
+			deadNumber++;
+		}
+	}
+
+
 	for (int i = 0; i < numIterations; i++){
 
-		for (int j = 0; j < board.getSize(); j++){
-			Cell* currCell = board.getElementAtIndex(j);
+#pragma omp parallel for schedule(static)
+		for (int j = 0; j < aliveNumber; j++){
+			Cell* currCell = aliveCells[j];
 
 			int neighborCount = board.getAliveNeighborCount(currCell);
 
 			switch(neighborCount){
 			case 2:
-				currCell->setaliveNextCycle(currCell->getaliveNow());
-				break;
-
 			case 3:
 				currCell->setaliveNextCycle(true);
 				break;
@@ -69,15 +87,33 @@ int main(int argc, char * argv[]){
 			default:
 				currCell->setaliveNextCycle(false);
 				break;
+			}
+
+		}
+
+#pragma omp parallel for schedule(static)
+		for (int j = 0; j < deadNumber; j++){
+			Cell* currCell = deadCells[j];
+
+			int neighborCount = board.getAliveNeighborCount(currCell);
+
+			switch(neighborCount){
+				case 3:
+					currCell->setaliveNextCycle(true);
+					break;
+
+				default:
+					currCell->setaliveNextCycle(false);
+					break;
 
 			}
 		}
+
 
 		board.updateBoard();
 
 		board.display();
 	}
-
 }
 
 
