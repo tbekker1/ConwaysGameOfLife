@@ -30,14 +30,14 @@ void divideBoard(Board &, int, int, int);
  * dimension of array (if dimension = 8, size = 64)
  * number of iterations
  * initial density of live cells (a percentage from 1 to 100)
+ * number of threads to run
  * [optional] number of partitions made per recursive step
  * 
  */
 
-
 int main(int argc, char * argv[]){
 
-	if (argc < 4 || argc > 5){
+	if (argc < 5 || argc > 6){
 		cerr << "Must provide arguments" << endl;
 		return -1;
 	}
@@ -46,10 +46,12 @@ int main(int argc, char * argv[]){
 	int numIterations = atoi(argv[2]);
 	int density = atoi(argv[3]);
     int partitions;
-    if (argc == 4) {
+    int numThreads = atoi(argv[4]);
+
+    if (argc == 5) {
         partitions = dimension;
     } else {
-        partitions = atoi(argv[4]);
+        partitions = atoi(argv[5]);
     }
 
 	if (density < 1 || density > 100){
@@ -57,19 +59,35 @@ int main(int argc, char * argv[]){
 		return -1;
 	}
 
+	omp_set_num_threads(numThreads);
+
 	Board board(dimension);
 	board.init(density);
 
 	board.display();
 
+
+	double begin;
+	double end;
+
+	begin = omp_get_wtime();
 	for (int i = 0; i < numIterations; i++){
 
         divideBoard(board, 0, board.getSize(), partitions);
 
+    	if (i == numIterations - 1){
+    		end = omp_get_wtime();
+    	}
+
+
 		board.updateBoard();
 
 		board.display();
+
 	}
+
+	double time = end - begin;
+	cout << "Runtime taken for simulation to finish: " << time << " seconds" << endl;
 
 }
 
@@ -99,7 +117,7 @@ void divideBoard(Board &board, int start, int end, int partitions) {
         do {
             if(end - start >= p) {
                 int size = (end - start) / p;
-		#pragma omp for
+		#pragma omp parallel for
                 for(int i = 0; i < p; i ++) {
                     if (i+1 < p) {
                         divideBoard(board, start + (i * size), start + ((i + 1) * size), p);

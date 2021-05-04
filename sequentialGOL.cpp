@@ -50,6 +50,12 @@ int main(int argc, char * argv[]){
 
 	board.display();
 
+
+	double begin;
+	double end;
+
+	begin = omp_get_wtime();
+
 	for (int i = 0; i < numIterations; i++){
 
 		for (int j = 0; j < board.getSize(); j++){
@@ -73,11 +79,18 @@ int main(int argc, char * argv[]){
 			}
 		}
 
+		if (i == numIterations - 1){
+			end = omp_get_wtime();
+		}
+
 		board.updateBoard();
 
 		board.display();
+
 	}
 
+	double time = end - begin;
+	cout << "Runtime taken for simulation to finish: " << time << " seconds" << endl;
 }
 
 
