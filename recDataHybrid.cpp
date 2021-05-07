@@ -82,7 +82,7 @@ int main(int argc, char * argv[]){
 
 		board.updateBoard();
 
-		board.display();
+	        board.display();
 
 	}
 
@@ -93,11 +93,10 @@ int main(int argc, char * argv[]){
 
 void divideBoard(Board &board, int start, int end, int partitions) {
 
-    if (end - start <= 10) {
+ if (end - start < partitions) {
         // base case
-    		int length = end - start / partitions;
     		//call data algorithm with this partition
-    		dataAlgorithm(board, start, length);
+    	 dataAlgorithm(board, start, end);
     } else {
         int p = partitions;
         bool done = false;
@@ -118,16 +117,17 @@ void divideBoard(Board &board, int start, int end, int partitions) {
             }
         } while(!done);
     }
+
 }
 
 
-void dataAlgorithm(Board &board, int start, int length){
-		Cell* aliveCells[length];
-		Cell* deadCells[length];
+void dataAlgorithm(Board &board, int start, int end){
+		Cell** aliveCells = new Cell* [end - start];
+		Cell** deadCells = new Cell* [end - start];
 		int aliveNumber = 0;
 		int deadNumber = 0;
 
-		for (int i = start; i < length; i++){
+		for (int i = start; i < end; i++){
 			Cell* currCell = board.getElementAtIndex(i);
 
 			if (currCell->getaliveNow() == true){

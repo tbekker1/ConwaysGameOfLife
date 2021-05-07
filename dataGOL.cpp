@@ -27,7 +27,6 @@ using namespace std;
  * dimension of array (if dimension = 8, size = 64)
  * number of iterations
  * initial density of live cells (a percentage from 1 to 100)
- * number of threads to run
  */
 
 
@@ -54,12 +53,13 @@ int main(int argc, char * argv[]){
 	board.init(density);
 
 	board.display();
-
-	Cell* aliveCells[board.getSize()];
-	Cell* deadCells[board.getSize()];
+	
+	Cell** aliveCells = new Cell* [board.getSize()];
+	Cell** deadCells = new Cell* [board.getSize()];
 	int aliveNumber = 0;
 	int deadNumber = 0;
 
+	
 	for (int i = 0; i < board.getSize(); i++){
 		Cell* currCell = board.getElementAtIndex(i);
 
@@ -73,19 +73,20 @@ int main(int argc, char * argv[]){
 		}
 	}
 
-
+	
 	double begin;
 	double end;
 
 	begin = omp_get_wtime();
 	for (int i = 0; i < numIterations; i++){
 
-#pragma omp parallel for schedule(static)
+#pragma omp parallel for schedule(static) 
 		for (int j = 0; j < aliveNumber; j++){
 			Cell* currCell = aliveCells[j];
 
 			int neighborCount = board.getAliveNeighborCount(currCell);
 
+			
 			switch(neighborCount){
 			case 2:
 			case 3:
@@ -99,6 +100,8 @@ int main(int argc, char * argv[]){
 
 		}
 
+
+		
 #pragma omp parallel for schedule(static)
 		for (int j = 0; j < deadNumber; j++){
 			Cell* currCell = deadCells[j];
@@ -117,6 +120,7 @@ int main(int argc, char * argv[]){
 			}
 		}
 
+		
 		if (i == numIterations - 1){
 			end = omp_get_wtime();
 		}
@@ -127,7 +131,7 @@ int main(int argc, char * argv[]){
 	}
 
 	double time = end - begin;
-	cout << "Runtime taken for simulation to finish: " << time << " seconds" << endl;
+        cout << "Runtime taken for simulation to finish: " << time << " seconds" << endl;
 }
 
 
